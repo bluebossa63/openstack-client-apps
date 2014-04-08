@@ -93,21 +93,21 @@ public class OpenStackClientController {
 		assert button != null : "fx:id=\"button\" was not injected: check your FXML file 'OpenStackClient.fxml'.";
 
 		if (button != null) {
-			button.setOnAction(new LoginEvent());
+			button.setOnAction(new LoginEvent(this));
 		}
 
 		assert treeView != null : "fx:id=\"treeView\" was not injected: check your FXML file 'OpenStackClient.fxml'.";
 		treeView.setOnMouseClicked(new DownloadEvent());
 
-		performLogin();
-		loadTree();
+		//performLogin();
+		
 
 	}
 
 	/**
 	 * 
 	 */
-	private void loadTree() {
+	void loadTree() {
 
 		TreeItem<String> rootItem = new OpenStackTreeItem(
 				signupService.getUser());
@@ -150,12 +150,9 @@ public class OpenStackClientController {
 	/**
 	 * 
 	 */
-	private void performLogin() {
+	void performLogin() {
 		signupService
 				.setSignupURL("https://openstack.niceneasy.ch:7443/account-management/rest/users/");
-		User user = signupService.getUser();
-		user.setUsername("daniele");
-		user.setPassword("thePassword");
 		loginConfirmation = signupService.login();
 
 		openStackClientService.setKeystoneAuthUrl(loginConfirmation
@@ -236,11 +233,17 @@ public class OpenStackClientController {
 	}
 
 	public class LoginEvent implements EventHandler<ActionEvent> {
+		
+		OpenStackClientController openStackClientController;
+		
+		public LoginEvent(OpenStackClientController openStackClientController) {
+			this.openStackClientController = openStackClientController;
+		}
 		@Override
 		public void handle(ActionEvent event) {
 			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource(
-						"LoginDialog.fxml"));
+				FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
+						"ch/niceneasy/openstack/client/fx/LoginDialog.fxml"));
 				Stage stage = new Stage();
 				AnchorPane page = (AnchorPane) loader.load();
 				Scene scene = new Scene(page);
@@ -248,6 +251,12 @@ public class OpenStackClientController {
 				stage.initOwner(button.getScene().getWindow());
 				stage.initModality(Modality.APPLICATION_MODAL);
 				stage.show();
+				
+				LoginController controller = 
+	        			  loader.<LoginController>getController();
+	            controller.setParentController(openStackClientController);
+				controller.setStage(stage);
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -309,5 +318,13 @@ public class OpenStackClientController {
 		out.flush();
 		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
 		return new javafx.scene.image.Image(in);
+	}
+
+	public SignupService getSignupService() {
+		return signupService;
+	}
+
+	public OpenStackClientService getOpenStackClientService() {
+		return openStackClientService;
 	}
 }

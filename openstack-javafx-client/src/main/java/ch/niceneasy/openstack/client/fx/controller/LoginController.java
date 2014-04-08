@@ -17,11 +17,15 @@ import com.woorea.openstack.swift.model.Objects;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
+import javafx.scene.*;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.scene.control.*;
-import javafx.scene.control.TreeView;
+import javafx.stage.*;
+import javafx.scene.layout.*;
+import javafx.scene.text.*;
+import javafx.geometry.*;
 
 /**
  * The Class LoginController.
@@ -45,6 +49,10 @@ public class LoginController {
 	@FXML
 	// fx:id="txtPassword"
 	private TextField txtPassword;
+	
+	private OpenStackClientController openStackClientController;
+	
+	private Stage stage;
 
 	@FXML
 	// This method is called by the FXMLLoader when initialization is complete
@@ -56,9 +64,47 @@ public class LoginController {
 				@Override
 				public void handle(ActionEvent event) {
 					System.out.println("Hello World");
+					User user = openStackClientController.getSignupService().getUser();
+					user.setUsername(txtUsername.getText());
+					user.setPassword(txtPassword.getText());
+					try {
+						openStackClientController.performLogin();
+						openStackClientController.loadTree();
+						stage.close();
+					} catch (Exception e) {
+						final Stage dialogStage = new Stage();
+						dialogStage.initModality(Modality.WINDOW_MODAL);
+						Button button = new Button("Ok");
+						button.setOnAction(new EventHandler<ActionEvent>() {
+									@Override
+									public void handle(ActionEvent event) {
+										dialogStage.close();
+									}});
+						dialogStage.setScene(new Scene(VBoxBuilder.create().
+						    children(new Text(e.getLocalizedMessage()), button).
+						    alignment(Pos.CENTER).padding(new Insets(5)).build()));
+						dialogStage.show();
+					}
 				}
 			});
 		}
+	}
+
+	/**
+	 * @param openStackClientController
+	 */
+	public void setParentController(
+			OpenStackClientController openStackClientController) {
+		this.openStackClientController =  openStackClientController;
+		
+	}
+
+	/**
+	 * @param stage
+	 */
+	public void setStage(Stage stage) {
+		this.stage = stage;
+		
 	}
 
 }
