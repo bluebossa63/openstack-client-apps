@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+
+<AnchorPane id="AnchorPane" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="611.0" prefWidth="721.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="ch.niceneasy.openstack.client.fx.controller.OpenStackClientController">
+  <children>
+    <Button fx:id="button" layoutX="14.0" layoutY="565.0" text="Hello World" />
+    <TreeView fx:id="treeView" layoutX="287.0" layoutY="14.0" prefHeight="583.0" prefWidth="420.0" />
+  </children>
+</AnchorPane>
