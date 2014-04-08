@@ -4,28 +4,22 @@
 package ch.niceneasy.openstack.client.fx.controller;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-
-import com.woorea.openstack.keystone.model.Tenant;
-import com.woorea.openstack.keystone.model.Tenants;
-import com.woorea.openstack.keystone.model.User;
-import com.woorea.openstack.swift.Swift;
-import com.woorea.openstack.swift.model.Container;
-import com.woorea.openstack.swift.model.Objects;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBoxBuilder;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.scene.control.*;
-import javafx.stage.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.*;
-import javafx.geometry.*;
+
+import com.woorea.openstack.keystone.model.User;
 
 /**
  * The Class LoginController.
@@ -49,9 +43,9 @@ public class LoginController {
 	@FXML
 	// fx:id="txtPassword"
 	private TextField txtPassword;
-	
+
 	private OpenStackClientController openStackClientController;
-	
+
 	private Stage stage;
 
 	@FXML
@@ -64,7 +58,8 @@ public class LoginController {
 				@Override
 				public void handle(ActionEvent event) {
 					System.out.println("Hello World");
-					User user = openStackClientController.getSignupService().getUser();
+					User user = openStackClientController.getSignupService()
+							.getUser();
 					user.setUsername(txtUsername.getText());
 					user.setPassword(txtPassword.getText());
 					try {
@@ -76,13 +71,16 @@ public class LoginController {
 						dialogStage.initModality(Modality.WINDOW_MODAL);
 						Button button = new Button("Ok");
 						button.setOnAction(new EventHandler<ActionEvent>() {
-									@Override
-									public void handle(ActionEvent event) {
-										dialogStage.close();
-									}});
-						dialogStage.setScene(new Scene(VBoxBuilder.create().
-						    children(new Text(e.getLocalizedMessage()), button).
-						    alignment(Pos.CENTER).padding(new Insets(5)).build()));
+							@Override
+							public void handle(ActionEvent event) {
+								dialogStage.close();
+							}
+						});
+						dialogStage.setScene(new Scene(VBoxBuilder
+								.create()
+								.children(new Text(e.getLocalizedMessage()),
+										button).alignment(Pos.CENTER)
+								.padding(new Insets(5)).build()));
 						dialogStage.show();
 					}
 				}
@@ -95,8 +93,8 @@ public class LoginController {
 	 */
 	public void setParentController(
 			OpenStackClientController openStackClientController) {
-		this.openStackClientController =  openStackClientController;
-		
+		this.openStackClientController = openStackClientController;
+
 	}
 
 	/**
@@ -104,7 +102,7 @@ public class LoginController {
 	 */
 	public void setStage(Stage stage) {
 		this.stage = stage;
-		
+
 	}
 
 }

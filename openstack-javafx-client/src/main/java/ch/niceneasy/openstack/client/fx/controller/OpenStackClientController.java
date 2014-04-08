@@ -18,22 +18,23 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.activation.MimeType;
-import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
-
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.*;
-import javafx.scene.image.*;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import javax.imageio.ImageIO;
 
 import org.apache.commons.io.IOUtils;
 
@@ -46,40 +47,54 @@ import ch.niceneasy.openstack.client.fx.util.PseudoFileSystem;
 
 import com.woorea.openstack.keystone.model.Tenant;
 import com.woorea.openstack.keystone.model.Tenants;
-import com.woorea.openstack.keystone.model.User;
 import com.woorea.openstack.swift.Swift;
 import com.woorea.openstack.swift.model.Container;
 import com.woorea.openstack.swift.model.ObjectDownload;
 import com.woorea.openstack.swift.model.Objects;
 
 /**
+ * The Class OpenStackClientController.
+ * 
  * @author Daniele
  */
-
 public class OpenStackClientController {
 
+	/** The resources. */
 	@FXML
 	// ResourceBundle that was given to the FXMLLoader
 	private ResourceBundle resources;
+
+	/** The location. */
 	@FXML
 	// URL location of the FXML file that was given to the FXMLLoader
 	private URL location;
+
+	/** The button. */
 	@FXML
 	// fx:id="button"
 	private Button button; // Value injected by FXMLLoader
+
+	/** The tree view. */
 	@FXML
 	// fx:id="treeView"
 	private TreeView<String> treeView;
 
+	/** The signup service. */
 	private SignupService signupService = SignupService.getInstance();
 
+	/** The open stack client service. */
 	OpenStackClientService openStackClientService = OpenStackClientService
 			.getInstance();
 
+	/** The login confirmation. */
 	private LoginConfirmation loginConfirmation;
 
+	/** The open stack. */
 	private File openStack;
 
+	/**
+	 * Initialize.
+	 */
 	@FXML
 	// This method is called by the FXMLLoader when initialization is complete
 	void initialize() {
@@ -99,13 +114,12 @@ public class OpenStackClientController {
 		assert treeView != null : "fx:id=\"treeView\" was not injected: check your FXML file 'OpenStackClient.fxml'.";
 		treeView.setOnMouseClicked(new DownloadEvent());
 
-		//performLogin();
-		
+		// performLogin();
 
 	}
 
 	/**
-	 * 
+	 * Load tree.
 	 */
 	void loadTree() {
 
@@ -148,7 +162,7 @@ public class OpenStackClientController {
 	}
 
 	/**
-	 * 
+	 * Perform login.
 	 */
 	void performLogin() {
 		signupService
@@ -172,9 +186,12 @@ public class OpenStackClientController {
 	}
 
 	/**
-	 * @param current
+	 * Read directory.
+	 * 
 	 * @param parent
+	 *            the parent
 	 * @param pfs
+	 *            the pfs
 	 */
 	private void readDirectory(OpenStackTreeItem parent, PseudoFileSystem pfs) {
 		for (com.woorea.openstack.swift.model.Object object : pfs.getFiles()
@@ -195,7 +212,8 @@ public class OpenStackClientController {
 			if (thisDir.getPath().endsWith("jpg")) {
 				Image image;
 				try {
-					image = new Image(new FileInputStream(thisDir),100,100,false,false);
+					image = new Image(new FileInputStream(thisDir), 100, 100,
+							false, false);
 					child3.setGraphic(new ImageView(image));
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -228,22 +246,49 @@ public class OpenStackClientController {
 		}
 	}
 
+	/**
+	 * Register stage.
+	 * 
+	 * @param stage
+	 *            the stage
+	 * @param dragNode
+	 *            the drag node
+	 */
 	public void registerStage(Stage stage, Node dragNode) {
 		EffectUtilities.makeDraggable(stage, dragNode);
 	}
 
+	/**
+	 * The Class LoginEvent.
+	 */
 	public class LoginEvent implements EventHandler<ActionEvent> {
-		
+
+		/** The open stack client controller. */
 		OpenStackClientController openStackClientController;
-		
+
+		/**
+		 * Instantiates a new login event.
+		 * 
+		 * @param openStackClientController
+		 *            the open stack client controller
+		 */
 		public LoginEvent(OpenStackClientController openStackClientController) {
 			this.openStackClientController = openStackClientController;
 		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javafx.event.EventHandler#handle(javafx.event.Event)
+		 */
 		@Override
 		public void handle(ActionEvent event) {
 			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
-						"ch/niceneasy/openstack/client/fx/LoginDialog.fxml"));
+				FXMLLoader loader = new FXMLLoader(
+						getClass()
+								.getClassLoader()
+								.getResource(
+										"ch/niceneasy/openstack/client/fx/LoginDialog.fxml"));
 				Stage stage = new Stage();
 				AnchorPane page = (AnchorPane) loader.load();
 				Scene scene = new Scene(page);
@@ -251,18 +296,27 @@ public class OpenStackClientController {
 				stage.initOwner(button.getScene().getWindow());
 				stage.initModality(Modality.APPLICATION_MODAL);
 				stage.show();
-				
-				LoginController controller = 
-	        			  loader.<LoginController>getController();
-	            controller.setParentController(openStackClientController);
+
+				LoginController controller = loader
+						.<LoginController> getController();
+				controller.setParentController(openStackClientController);
 				controller.setStage(stage);
-				
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * Download file.
+	 * 
+	 * @param item
+	 *            the item
+	 * @return the file
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public File downloadFile(OpenStackTreeItem item) throws IOException {
 		OpenStackTreeItem search = item;
 		Container container = search.getContainer();
@@ -284,7 +338,16 @@ public class OpenStackClientController {
 
 	}
 
+	/**
+	 * The Class DownloadEvent.
+	 */
 	public class DownloadEvent implements EventHandler<MouseEvent> {
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see javafx.event.EventHandler#handle(javafx.event.Event)
+		 */
 		@Override
 		public void handle(MouseEvent mouseEvent) {
 			if (mouseEvent.getClickCount() == 2) {
@@ -306,6 +369,15 @@ public class OpenStackClientController {
 
 	}
 
+	/**
+	 * Creates the image.
+	 * 
+	 * @param icon
+	 *            the icon
+	 * @return the javafx.scene.image. image
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public static javafx.scene.image.Image createImage(javax.swing.Icon icon)
 			throws IOException {
 		BufferedImage bufferedImage = new BufferedImage(icon.getIconWidth(),
@@ -314,16 +386,26 @@ public class OpenStackClientController {
 		icon.paintIcon(null, g, 0, 0);
 		g.dispose();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		ImageIO.write((RenderedImage) bufferedImage, "png", out);
+		ImageIO.write(bufferedImage, "png", out);
 		out.flush();
 		ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
 		return new javafx.scene.image.Image(in);
 	}
 
+	/**
+	 * Gets the signup service.
+	 * 
+	 * @return the signup service
+	 */
 	public SignupService getSignupService() {
 		return signupService;
 	}
 
+	/**
+	 * Gets the open stack client service.
+	 * 
+	 * @return the open stack client service
+	 */
 	public OpenStackClientService getOpenStackClientService() {
 		return openStackClientService;
 	}
